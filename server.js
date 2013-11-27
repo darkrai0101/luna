@@ -15,8 +15,10 @@ var store = new express.session.MemoryStore;
 
 var my_calendars = [],
     my_profile = {},
-    my_email = '';
+    my_email = '',
+    my_hangoutLink = '',
     my_test = '';
+
 
 // var _mysql = require('mysql');
 // var mysql = _mysql.createConnection({
@@ -30,7 +32,7 @@ var my_calendars = [],
 app.configure(function(){
 
 	app.use(express.static(__dirname+'/public'));
-	app.set('port', process.env.PORT || 3000);
+	app.set('port', process.env.PORT || 8080);
 	app.engine('html', require('ejs').renderFile);
 	app.set('view engine', 'html');
 	app.set('views', __dirname + '/views');
@@ -94,7 +96,8 @@ app.get('/oauth2callback', function(req, res) {
   gapi.client.getToken(code, function(err, tokens){
     gapi.client.credentials = tokens;
     req.session.token = tokens;
-    getData();
+    //getData();
+    insertCal();
   });
   var locals = {
 	    title: "These are your calendars",
@@ -120,7 +123,33 @@ var getData = function() {
 };
 
 var insertCal = function(){
-	//gapi.cal.
+	now = new Date();
+	gapi.cal.insert({
+		calendarId: 'primary',
+		resource: {
+			summary: 'hangout',
+			description: 'hangout',
+			reminders: {
+				overriders: {
+					method: 'popup',
+					minutes: 0
+				}
+			},
+			start: {
+				dateTime: now
+			},
+			end: {
+				dateTime: now
+			},
+			attendess: [{
+				email: 'nv.trung91@gmail.com'
+			}]
+		}
+	})
+	.withAuthClient(gapi.client)
+	.execute(function(err, event){
+		my_hangoutLink = event.hangoutLink;
+	})
 };
 
 app.get('/cal', function(req, res){
@@ -133,4 +162,13 @@ app.get('/cal', function(req, res){
     test: my_test
   };
   res.render('cal', locals);
+});
+
+app.get('/insert', function(req, res){
+	var locals = {
+    title: "These are insert calendars",
+    test: my_test,
+    link: my_hangoutLink
+  };
+  res.render('insert', locals);
 });
