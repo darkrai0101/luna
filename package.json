@@ -1,0 +1,19 @@
+{
+  "name": "amduonglich",
+  "version": "0.0.0",
+  "description": "sada",
+  "main": "server.js",
+  "scripts": {
+    "test": "a",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "amduonglich"
+  },
+  "keywords": [
+    "a"
+  ],
+  "author": "a",
+  "license": "BSD"
+}
